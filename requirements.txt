@@ -1,0 +1,7 @@
+transformer-lens>=2.0
+torch
+anthropic
+scikit-learn
+numpy
+pandas
+matplotlib
