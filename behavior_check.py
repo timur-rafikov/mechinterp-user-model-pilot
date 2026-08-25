@@ -63,12 +63,14 @@ def main():
     ap.add_argument("--limit", type=int, default=8)
     ap.add_argument("--max-new-tokens", type=int, default=60)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument("--dtype", default="float16", choices=["float16", "float32", "bfloat16"])
     args = ap.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Loading {args.model} on {args.device} ...")
-    model = HookedTransformer.from_pretrained(args.model, device=args.device)
+    print(f"Loading {args.model} on {args.device} ({args.dtype}) ...")
+    dtype = getattr(torch, args.dtype)
+    model = HookedTransformer.from_pretrained(args.model, device=args.device, dtype=dtype)
 
     dialogues = load_dialogues(args.dialogues, args.limit)
     print(f"Rolling out {len(dialogues)} dialogues ...")

@@ -56,7 +56,7 @@ def rollout_dialogue(model, turns, max_new_tokens=40, layers=None):
 
         resid_by_layer = {}
         for layer in layers:
-            act = cache[f"blocks.{layer}.hook_resid_post"][0, last_pos, :].detach().cpu()
+            act = cache[f"blocks.{layer}.hook_resid_post"][0, last_pos, :].detach().float().cpu()
             resid_by_layer[layer] = act
 
         gen_tokens = model.generate(
