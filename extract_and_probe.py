@@ -52,13 +52,17 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=30)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--dtype", default="float16", choices=["float16", "float32", "bfloat16"])
+    ap.add_argument("--no-processing", action="store_true", help="use from_pretrained_no_processing — lower peak memory, needed for larger models on limited VRAM")
     args = ap.parse_args()
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
 
-    print(f"Loading {args.model} on {args.device} ({args.dtype}) ...")
+    print(f"Loading {args.model} on {args.device} ({args.dtype}, no_processing={args.no_processing}) ...")
     dtype = getattr(torch, args.dtype)
-    model = HookedTransformer.from_pretrained(args.model, device=args.device, dtype=dtype)
+    if args.no_processing:
+        model = HookedTransformer.from_pretrained_no_processing(args.model, device=args.device, dtype=dtype)
+    else:
+        model = HookedTransformer.from_pretrained(args.model, device=args.device, dtype=dtype)
 
     dialogues = load_dialogues(args.dialogues, REVEAL_CONDITIONS, args.limit)
     print(f"Rolling out {len(dialogues)} dialogues ...")
